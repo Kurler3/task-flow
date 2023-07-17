@@ -1,8 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
 import { IsOptional, IsString } from 'class-validator';
 import { AuthLoginDto } from './auth-login.dto';
 
-export class AuthRegisterDto extends PartialType(AuthLoginDto) {
+export class AuthRegisterDto extends AuthLoginDto {
   @IsOptional()
   @IsString()
   firstName?: string;

@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -80,7 +80,7 @@ export class AuthService {
 
     // Return token.
     return {
-      token: jwtToken,
+      access_token: jwtToken,
       refreshToken: refreshToken,
     };
   }

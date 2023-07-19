@@ -17,7 +17,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "yarn dotenv-cli .env.test -- jest --config ./test/jest-e2e.json",
+    "test:e2e": "dotenv -e .env.test -- jest --config ./test/jest-e2e.json",
+
+    "db:test:rm": "docker compose rm test-db -s -f -v",
+    "db:test:up": "docker compose up test-db -d",
+    "prisma:test:deploy": "dotenv -e .env.test -- yarn prisma migrate deploy",
+    "db:test:restart": "yarn db:test:rm && yarn db:test:up && yarn prisma:test:deploy",
 
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",

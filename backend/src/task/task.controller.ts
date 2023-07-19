@@ -9,10 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
+
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from 'src/auth/decorator';
+import { CreateTaskDto, UpdateTaskDto } from './dto';
+import { User } from '@prisma/client';
 
 @UseGuards(JwtGuard)
 @Controller('task')
@@ -20,8 +21,8 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post('create')
-  create(@GetUser('id') userId: number, @Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(userId, createTaskDto);
+  create(@GetUser('id') user: User, @Body() createTaskDto: CreateTaskDto) {
+    return this.taskService.create(user.id, createTaskDto);
   }
 
   @Get('list')

@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TaskService {
@@ -9,14 +10,20 @@ export class TaskService {
 
   async create(userId: number, createTaskDto: CreateTaskDto) {
     try {
-      const task = await this.prisma.task.create({
-        data: {
-          ...createTaskDto,
-          userId,
+      const task: Prisma.TaskCreateInput = {
+        user: {
+          connect: {
+            id: userId,
+          },
         },
+        ...createTaskDto,
+      };
+
+      const createdTask = await this.prisma.task.create({
+        data: task,
       });
 
-      return task;
+      return createdTask;
     } catch (error) {
       console.error(error);
       throw new BadRequestException(

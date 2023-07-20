@@ -32,12 +32,14 @@ export class TaskService {
     }
   }
 
-  findAll() {
-    return `This action returns all task`;
-  }
+  async findAll(userId: number) {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        userId,
+      },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+    return tasks;
   }
 
   update(id: number, updateTaskDto: UpdateTaskDto) {

@@ -13,7 +13,8 @@ import { TaskService } from './task.service';
 import { JwtGuard } from '../auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { CreateTaskDto, UpdateTaskDto } from './dto';
-import { User } from '@prisma/client';
+import { GetTask } from './decorator';
+import { Task } from '@prisma/client';
 
 @UseGuards(JwtGuard)
 @Controller('task')
@@ -21,18 +22,18 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post('create')
-  create(@GetUser('id') user: User, @Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(user.id, createTaskDto);
+  create(@GetUser('id') userId: number, @Body() createTaskDto: CreateTaskDto) {
+    return this.taskService.create(userId, createTaskDto);
   }
 
   @Get('list')
-  findAll() {
-    return this.taskService.findAll();
+  findAll(@GetUser('id') userId: number) {
+    return this.taskService.findAll(userId);
   }
 
   @Get('get/:id')
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(+id);
+  findOne(@GetTask() task: Task) {
+    return task;
   }
 
   @Patch('update/:id')

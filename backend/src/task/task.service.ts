@@ -38,7 +38,6 @@ export class TaskService {
         userId,
       },
     });
-
     return tasks;
   }
 

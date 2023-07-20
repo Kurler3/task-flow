@@ -35,7 +35,7 @@ export class TaskMiddleware implements NestMiddleware {
     // // Add the task to the request.
     // req.task = task;
 
-    console.log("Middleware");
+    console.log("Middleware", req.user);
 
     // Continue
     next();

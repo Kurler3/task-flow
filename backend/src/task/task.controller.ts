@@ -15,7 +15,7 @@ import { CreateTaskDto, UpdateTaskDto } from './dto';
 import { GetTask } from './decorator';
 import { Task } from '@prisma/client';
 
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}

@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { GetUser } from 'src/auth/decorator';
+import { GetUser } from '../auth/decorator';
 import { CreateTaskDto, UpdateTaskDto } from './dto';
 import { GetTask } from './decorator';
 import { Task } from '@prisma/client';

@@ -9,13 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { JwtGuard } from '../auth/guard';
 import { GetUser } from 'src/auth/decorator';
 import { CreateTaskDto, UpdateTaskDto } from './dto';
 import { GetTask } from './decorator';
 import { Task } from '@prisma/client';
+import { TaskGuard } from './guard';
 
-// @UseGuards(JwtGuard)
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -30,18 +29,21 @@ export class TaskController {
     return this.taskService.findAll(userId);
   }
 
+  @UseGuards(TaskGuard)
   @Get('get/:id')
   findOne(@GetTask() task: Task) {
     return task;
   }
 
+  @UseGuards(TaskGuard)
   @Patch('update/:id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(+id, updateTaskDto);
+  update(@Body() updateTaskDto: UpdateTaskDto, @GetTask() task: Task) {
+    return this.taskService.update(updateTaskDto, task);
   }
 
+  @UseGuards(TaskGuard)
   @Delete('delete/:id')
-  remove(@Param('id') id: string) {
-    return this.taskService.remove(+id);
+  remove(@GetTask('id') taskId: number) {
+    return this.taskService.remove(taskId);
   }
 }

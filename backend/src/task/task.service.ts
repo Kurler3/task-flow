@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, Task } from '@prisma/client';
 
 @Injectable()
 export class TaskService {
@@ -41,11 +41,33 @@ export class TaskService {
     return tasks;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(updateTaskDto: UpdateTaskDto, task: Task) {
+    // If no keys on the body.
+    if (Object.keys(updateTaskDto).length === 0) {
+      throw new BadRequestException(
+        'Need to provide a body to update this task.',
+      );
+    }
+
+    // Update the task.
+    const updatedTask = await this.prisma.task.update({
+      where: {
+        id: task.id,
+      },
+      data: {
+        ...updateTaskDto,
+      },
+    });
+
+    return updatedTask;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(taskId: number) {
+    await this.prisma.task.delete({
+      where: {
+        id: taskId,
+      },
+    });
+    return `Task with id: '${taskId}' deleted`;
   }
 }

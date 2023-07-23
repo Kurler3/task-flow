@@ -1,13 +1,16 @@
 import './App.css'
-import AppNavbar from './components/AppNavbar'
+import AppNavbar from './components/AppNavbar.component'
+import UnauthenticatedView from './components/UnauthenticatedView.component';
 
-function App() {
+const App = () => {
 
   return (
-    <>
+    <div className='h-screen w-screen flex flex-col'>
       <AppNavbar />
-    </>
+
+      <UnauthenticatedView />
+    </div>
   )
 }
 
-export default App
+export default App;

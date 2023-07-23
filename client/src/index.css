@@ -4,7 +4,7 @@
 
 :root {
   --gun-metal: #122C34;
-  --indigo: #224870;
+  --indigo: #243d55;
   --marian-blue: #2A4494;
   --picton-blue: #4EA5D9;
   --robin-egg-blue: #44CFCB;
@@ -15,6 +15,23 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: var(--marian-blue);
+  background-color: var(--indigo);
 
+}
+
+/* Assuming you have set the initial opacity of the component to 0 */
+.fade-in-component {
+  opacity: 0;
+  animation: fadeInAnimation 1s forwards; /* Change the duration as per your preference */
+}
+
+@keyframes fadeInAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* Optional: If you want to animate the component's position */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Optional: If you want to animate the component's position */
+  }
 }

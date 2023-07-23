@@ -17,22 +17,19 @@ const App = () => {
   }
 
   return (
-    <div className='h-screen w-screen flex flex-col relative'>
-      <AppNavbar dispatch={dispatch} user={state.user}/>
-      {
-        state.isLoading ?
-        (
-          <div>Loading...</div>
-        )
-        :
-        state.user ?
-        (
-          <div>Logged in!</div>
-        ) :
-        (
-          <UnauthenticatedView />
-        )
-      }
+    <>
+      <div className='h-screen w-screen flex flex-col'>
+        <AppNavbar dispatch={dispatch} user={state.user}/>
+        {
+          state.user ?
+          (
+            <div>Logged in!</div>
+          ) :
+          (
+            <UnauthenticatedView />
+          )
+        }
+      </div>
 
       <AuthModal 
         isShow={
@@ -43,7 +40,11 @@ const App = () => {
         }
         handleClose={handleCloseAuthModal}
       />
-    </div>
+
+      {
+        state.isLoading && <div>Loading...</div>
+      }
+    </>
   )
 }
 

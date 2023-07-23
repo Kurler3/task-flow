@@ -1,39 +1,52 @@
-// import Container from 'react-bootstrap/Container';
-// import Navbar from 'react-bootstrap/Navbar';
+import { Action } from "../state/app/app.state";
+import { IUser } from "../types";
 
-const AppNavbar: React.FC = () => {
+type IProps = {
+  user: IUser | null;
+  dispatch: React.Dispatch<Action>;
+}
+
+const AppNavbar: React.FC<IProps> = ({
+  user,
+  dispatch,
+}) => {
+
+  // Handle show auth modal
+  const handleShowAuthModal = (type: 'login' | 'register') => {
+    dispatch({
+      type: 'SET_SHOW_AUTH_MODAL',
+      payload: {
+        type: type,
+        value: true,
+      }
+    })
+  }
+
   return (
     <div className="navbar bg-base-300">
-  <div className="navbar-start">
-    <div className="dropdown">
-      <label tabIndex={0} className="btn btn-ghost lg:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
-      </label>
-      <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-        <li><a>Item 1</a></li>
-        <li>
-          <a>Parent</a>
-          <ul className="p-2">
-            <li><a>Submenu 1</a></li>
-            <li><a>Submenu 2</a></li>
-          </ul>
-        </li>
-        <li><a>Item 3</a></li>
-      </ul>
-    </div>
-    <a className="btn btn-ghost normal-case text-xl text-picton-blue hover:text-picton-blue">TaskFlow</a>
-  </div>
-  
-  {/* Nav end */}
-  <div className="navbar-end gap-3">
-    {/* Login */}
-    <a className="btn bg-picton-blue text-white hover:bg-marian-blue">Login</a>
-    {/* Register */}
-    <a className="btn btn-secondary text-white">Register</a>
-  </div>
+      <div className="navbar-start">
+        <a className="btn btn-ghost normal-case text-xl text-picton-blue hover:text-picton-blue">TaskFlow</a>
+      </div>
 
-  {/* Sign out */}
-</div>
+      {/* Nav end */}
+      <div className="navbar-end gap-3">
+
+        {
+          user ?
+          (
+            <a className="btn bg-picton-blue text-white hover:bg-marian-blue">Logout</a>
+          ) :
+          (
+            <>
+              {/* Login */}
+              <a onClick={() => handleShowAuthModal('login')} className="btn bg-picton-blue text-white hover:bg-marian-blue">Login</a>
+              {/* Register */}
+              <a onClick={() => handleShowAuthModal('register')} className="btn btn-secondary text-white">Register</a>
+            </>
+          )
+        }
+      </div>
+    </div>
   );
 }
 

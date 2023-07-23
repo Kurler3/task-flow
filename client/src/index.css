@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gun-metal: #122C34;
+  --indigo: #224870;
+  --marian-blue: #2A4494;
+  --picton-blue: #4EA5D9;
+  --robin-egg-blue: #44CFCB;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: var(--marian-blue);
+
+}

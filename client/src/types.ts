@@ -31,3 +31,11 @@ export type ILoginResponse = {
   access_token: string; 
   refresh_token: string;
 }
+
+export type IStatus = {
+  label: string;
+  value: string;
+  bgColor: string;
+  textColor: string;
+  taskColor: string;
+}

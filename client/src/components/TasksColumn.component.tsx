@@ -15,7 +15,7 @@ const TasksColumn: React.FC<IProps> = ({
     status,
     tasks,
 }) => {
-    console.log(status)
+   
     return (
         <div className="flex-1 flex flex-col items-center justify-start h-100 p-2 rounded-md border shadow-lg bg-white">
 

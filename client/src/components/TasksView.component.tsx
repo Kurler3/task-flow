@@ -1,28 +1,44 @@
 import React, { useMemo } from "react";
 import { ITask } from "../types";
 import TasksColumn from "./TasksColumn.component";
+import {
+    TASK_STATUS
+} from "../../utils/constants";
 
 type IProps = {
     tasks: ITask[];
 }
 
-const TASK_STATUS = [
+export const DEFAULT_TASKS: ITask[] = [
     {
-        label: "To Do",
-        value: "todo",
-        bgColor: "bg-gray-400"
+        id: 1,
+        title: "Dummy todo",
+        description: "Dummy todo description",
+        status: "todo",
+        userId: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    
     },
     {
-        label: "In Progress",
-        value: "inProgress",
-        bgColor: "bg-blue-400"
+        id: 2,
+        title: "Dummy in progress",
+        description: "Dummy in progress description",
+        status: "inProgress",
+        userId: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     },
     {
-        label: "Done",
-        value: "done",
-        bgColor: "bg-green-400"
+        id: 3,
+        title: "Dummy done",
+        description: "Dummy done description",
+        status: "done",
+        userId: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     },
-];
+]
 
 const TasksView: React.FC<IProps> = ({
     tasks,
@@ -30,12 +46,18 @@ const TasksView: React.FC<IProps> = ({
 
 
     // Filter tasks by status and put in object.
-    // const filteredTasks = useMemo(() => {
-    //     return TASK_STATUS.reduce((acc, status) => {
-    //         acc[status] = tasks.filter(task => task.status === status);
-    //         return acc;
-    //     }, {} as { [key: string]: ITask[] });
-    // }, [tasks]);
+    const filteredTasks = useMemo(() => {
+        return TASK_STATUS.reduce((acc, status) => {
+
+            const statusValue = status.value;
+
+            acc[statusValue] = tasks.filter(task => task.status === statusValue);
+
+            return acc;
+        }, {} as { [key: string]: ITask[] });
+    }, [tasks]);
+
+    console.log({filteredTasks})
 
     return (
         <div className="flex justify-center p-14 gap-4 items-start w-full h-full">
@@ -45,6 +67,7 @@ const TasksView: React.FC<IProps> = ({
                         <TasksColumn 
                             key={status.value + index}
                             status={status}
+                            tasks={filteredTasks[status.value]}
                         />
                     )
                 })

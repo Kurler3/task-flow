@@ -1,4 +1,5 @@
 /* eslint-disable no-case-declarations */
+import { DEFAULT_TASKS } from "../../components/TasksView.component";
 import { ITask, IUser } from "../../types";
 
 type IState = {
@@ -12,7 +13,7 @@ type IState = {
 export const defaultAppState: IState = {
   isLoading: false,
   user: null,
-  tasks: null,
+  tasks: DEFAULT_TASKS,
   isShowRegisterModal: false,
   isShowLoginModal: false,
 }

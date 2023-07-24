@@ -5,6 +5,8 @@ import UnauthenticatedView from './components/UnauthenticatedView.component';
 import { appReducer, defaultAppState } from './state/app/app.state';
 import AuthModal from './components/AuthModal.component';
 import LoadingScreen from './components/LoadingScreen.component';
+import { IAuthFormValue } from './types';
+import { loginApi } from './api';
 
 
 const App = () => {
@@ -26,9 +28,40 @@ const App = () => {
   }
 
   // Handle Login 
+  const handleSubmitAuthModal = async (authValue: IAuthFormValue) => {
+    console.log(authValue);
 
-  // Handle Register
+    // Set app loading to true
+    dispatch({
+      type: 'SET_LOADING',
+      payload: true,
+    });
 
+    // Try to login user
+    try {
+
+      const tokens = await loginApi(authValue);
+
+      // Set the access_token in the cookies/local storage.
+      console.log(tokens);
+
+      // Call the /user/me route to get the user with this access_token.
+
+    } catch (error) {
+      
+      // Show error if any
+      console.error(error);
+
+    } finally {
+      // Set loading to false.
+      dispatch({
+        type: 'SET_LOADING',
+        payload: false,
+      });
+    }
+
+
+  }
 
   // Check if has jwt (send request to server to get current user if has)
   
@@ -56,6 +89,7 @@ const App = () => {
           state.isShowLoginModal
         }
         handleClose={handleCloseAuthModal}
+        handleSubmitAuthModal={handleSubmitAuthModal}
       />
 
       {

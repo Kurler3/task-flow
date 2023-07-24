@@ -4,6 +4,7 @@ import AppNavbar from './components/AppNavbar.component'
 import UnauthenticatedView from './components/UnauthenticatedView.component';
 import { appReducer, defaultAppState } from './state/app/app.state';
 import AuthModal from './components/AuthModal.component';
+import LoadingScreen from './components/LoadingScreen.component';
 
 
 const App = () => {
@@ -14,7 +15,23 @@ const App = () => {
   // Handle close auth modal.
   const handleCloseAuthModal = () => {
     console.log("Close auth modal!");
+
+    dispatch({
+      type: 'SET_SHOW_AUTH_MODAL',
+      payload: {
+        type: state.isShowLoginModal ? 'login' : 'register',
+        value: false,
+      }
+    });
   }
+
+  // Handle Login 
+
+  // Handle Register
+
+
+  // Check if has jwt (send request to server to get current user if has)
+  
 
   return (
     <>
@@ -42,7 +59,7 @@ const App = () => {
       />
 
       {
-        state.isLoading && <div>Loading...</div>
+        state.isLoading && <LoadingScreen />
       }
     </>
   )

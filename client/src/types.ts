@@ -18,3 +18,11 @@ export type ITask = {
   createdAt: string;
   updatedAt: string;
 }
+
+export type IAuthFormValue = {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  password: string;
+  confirmPassword?: string;
+}

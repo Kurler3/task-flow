@@ -29,7 +29,7 @@ const AppNavbar: React.FC<IProps> = ({
       </div>
 
       {/* Nav end */}
-      <div className="navbar-end gap-3">
+      <div className="navbar-end flex justify-center items-center gap-2 mr-4">
 
         {
           user ?

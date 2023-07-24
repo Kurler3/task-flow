@@ -7,6 +7,7 @@ import AuthModal from './components/AuthModal.component';
 import LoadingScreen from './components/LoadingScreen.component';
 import { IAuthFormValue, IUser } from './types';
 import { loginApi, registerApi } from './api';
+import TasksView from './components/TasksView.component';
 
 
 const App = () => {
@@ -99,15 +100,21 @@ const App = () => {
     <>
       <div className='h-screen w-screen flex flex-col'>
         <AppNavbar dispatch={dispatch} user={state.user}/>
-        {
-          state.user ?
-          (
-            <div>Logged in!</div>
-          ) :
-          (
-            <UnauthenticatedView />
-          )
-        }
+
+        <div className="bg-indigo w-100 h-100 flex justify-center items-center flex-1">
+          {
+            !state.user ?
+            (
+              <TasksView 
+                tasks={state.tasks!}
+              />
+            ) :
+            (
+              <UnauthenticatedView />
+            )
+          }
+        </div>
+        
       </div>
 
       <AuthModal 

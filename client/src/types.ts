@@ -26,3 +26,8 @@ export type IAuthFormValue = {
   password: string;
   confirmPassword?: string;
 }
+
+export type ILoginResponse = {
+  access_token: string; 
+  refresh_token: string;
+}

@@ -7,7 +7,7 @@ import AuthModal from './components/AuthModal.component';
 import LoadingScreen from './components/LoadingScreen.component';
 import { IAuthFormValue, IUser } from './types';
 import { loginApi, registerApi } from './api';
-import TasksView, { DEFAULT_TASKS } from './components/TasksView.component';
+import TasksView from './components/TasksView.component';
 
 
 const App = () => {
@@ -107,6 +107,7 @@ const App = () => {
             (
               <TasksView 
                 tasks={state.tasks!}
+                dispatch={dispatch}
               />
             ) :
             (

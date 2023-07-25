@@ -2,6 +2,7 @@
 import React, { useMemo } from "react";
 import { ITask } from "../types";
 import TasksColumn from "./TasksColumn.component";
+import { Action } from "../state/app/app.state";
 
 
 export const TASK_STATUS = [
@@ -31,9 +32,6 @@ export const TASK_STATUS = [
   },
 ];
 
-type IProps = {
-    tasks: ITask[];
-}
 
 export const DEFAULT_TASKS: ITask[] = [
     {
@@ -66,8 +64,14 @@ export const DEFAULT_TASKS: ITask[] = [
     },
 ]
 
+type IProps = {
+  tasks: ITask[];
+  dispatch: React.Dispatch<Action>;
+}
+
 const TasksView: React.FC<IProps> = ({
     tasks,
+    dispatch,
 }) => {
 
 
@@ -83,7 +87,44 @@ const TasksView: React.FC<IProps> = ({
         }, {} as { [key: string]: ITask[] });
     }, [tasks]);
 
-    console.log({filteredTasks})
+    /////////////////////////////////////////////////////////////////////////////////
+    // FUNCTIONS ////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
+
+    // Create task
+
+    // Update task
+    const handleUpdateTask = (updatedTask: ITask) => {
+
+      dispatch({
+        type: 'SET_LOADING',
+        payload: true,
+      });
+
+      try {
+
+        // Update the task in the backend.
+        setTimeout(() => {}, 2000);
+
+        // Update in app state.
+        dispatch({
+          type: 'UPDATE_TASK',
+          payload: updatedTask
+        });
+
+      } catch (error) {
+        console.error(error);
+        // Show error toast.
+      } finally {
+        dispatch({
+          type: 'SET_LOADING',
+          payload: false,
+        });
+      }
+
+    }
+
+    // Delete task
 
     return (
         <div className="flex justify-center p-14 gap-4 items-start w-full h-full">
@@ -94,6 +135,7 @@ const TasksView: React.FC<IProps> = ({
                             key={status.value + index}
                             status={status}
                             tasks={filteredTasks[status.value]}
+                            handleUpdateTask={handleUpdateTask}
                         />
                     )
                 })

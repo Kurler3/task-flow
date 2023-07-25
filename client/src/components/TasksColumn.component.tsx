@@ -4,11 +4,13 @@ import Task from "./Task.component";
 type IProps = {
     status: IStatus;
     tasks: ITask[];
+    handleUpdateTask: (updatedTask: ITask) => void;
 }
 
 const TasksColumn: React.FC<IProps> = ({
     status,
     tasks,
+    handleUpdateTask,
 }) => {
    
     return (

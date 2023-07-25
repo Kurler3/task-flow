@@ -1,13 +1,8 @@
-import { ITask } from "../types";
+import { IStatus, ITask } from "../types";
 import Task from "./Task.component";
 
 type IProps = {
-    status: {
-        label: string;
-        value: string;
-        bgColor: string;
-        textColor: string;
-    };
+    status: IStatus;
     tasks: ITask[];
 }
 
@@ -17,7 +12,7 @@ const TasksColumn: React.FC<IProps> = ({
 }) => {
    
     return (
-        <div className="flex-1 flex flex-col items-center justify-start h-100 p-2 rounded-md border shadow-lg bg-white">
+        <div className={`flex-1 flex flex-col items-center justify-start h-100 p-2 rounded-md border shadow-lg ${status.columnBgColor}`}>
 
             <div className={`w-100 text-center font-medium text-lg p-2 rounded-md ${status.bgColor} ${status.textColor}`}>
 

@@ -1,5 +1,5 @@
-import { TASK_STATUS } from "../../utils/constants";
 import { IStatus, ITask } from "../types";
+import { TASK_STATUS } from "./TasksView.component";
 
 
 type IProps = {
@@ -14,11 +14,13 @@ const Task: React.FC<IProps> = ({
 
     return (
         <div
-      className={`w-100 shadow p-4 mt-2 rounded-md opacity-[0.7] ${statusObject.taskColor} ${statusObject.textColor}`}
+      className={`
+      border bg-white cursor-grab transition hover:bg-gray-200 w-100 shadow-md p-4 mt-2 rounded-md opacity-[0.7]
+        ${statusObject.taskColor} ${statusObject.textColor}
+      `}
     >
       <h2 className="text-xl font-semibold">{task.title}</h2>
       <p className="text-gray-600">{task.description}</p>
-      {/* Status is not displayed here */}
     </div>
     );
 };

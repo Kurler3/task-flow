@@ -1,9 +1,35 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useMemo } from "react";
 import { ITask } from "../types";
 import TasksColumn from "./TasksColumn.component";
-import {
-    TASK_STATUS
-} from "../../utils/constants";
+
+
+export const TASK_STATUS = [
+  {
+      label: "To Do",
+      value: "todo",
+      bgColor: "bg-yellow-400",
+      textColor: "text-yellow-800",
+      taskColor: "text-yellow-300",
+      columnBgColor: "bg-yellow-100",
+  },
+  {
+      label: "In Progress",
+      value: "inProgress",
+      bgColor: "bg-blue-400",
+      textColor: "text-blue-800",
+      taskColor: "text-blue-300",
+      columnBgColor: "bg-blue-100",
+  },
+  {
+      label: "Done",
+      value: "done",
+      bgColor: "bg-green-400",
+      textColor: "text-green-800",
+      taskColor: "text-green-300",
+      columnBgColor: "bg-green-100"
+  },
+];
 
 type IProps = {
     tasks: ITask[];

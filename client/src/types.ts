@@ -38,4 +38,5 @@ export type IStatus = {
   bgColor: string;
   textColor: string;
   taskColor: string;
+  columnBgColor: string;
 }

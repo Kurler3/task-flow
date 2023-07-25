@@ -25,7 +25,7 @@ const AppNavbar: React.FC<IProps> = ({
   return (
     <div className="navbar bg-base-300">
       <div className="navbar-start">
-        <a className="btn btn-ghost normal-case text-xl text-picton-blue hover:text-picton-blue">TaskFlow</a>
+        <a className="btn btn-ghost normal-case text-xl text-picton-blue hover:text-picton-blue font-bold">TaskFlow</a>
       </div>
 
       {/* Nav end */}

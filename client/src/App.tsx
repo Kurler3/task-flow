@@ -8,6 +8,7 @@ import LoadingScreen from './components/LoadingScreen.component';
 import { IAuthFormValue, IUser } from './types';
 import { loginApi, registerApi } from './api';
 import TasksView from './components/TasksView.component';
+import DetailedTaskModal from './components/DetailedTaskModal.component';
 
 
 const App = () => {
@@ -17,14 +18,21 @@ const App = () => {
 
   // Handle close auth modal.
   const handleCloseAuthModal = () => {
-    console.log("Close auth modal!");
-
+  
     dispatch({
       type: 'SET_SHOW_AUTH_MODAL',
       payload: {
         type: state.isShowLoginModal ? 'login' : 'register',
         value: false,
       }
+    });
+  }
+
+  // Handle close detailed task modal.
+  const handleCloseDetailedTaskModal = () => {
+    dispatch({
+      type: 'SET_DETAILED_TASK_DATA',
+      payload: null,
     });
   }
 
@@ -93,11 +101,13 @@ const App = () => {
 
   }
 
-  // Check if has jwt (send request to server to get current user if has)
+  //TODO Check if has jwt (send request to server to get current user if has)
   
 
   return (
     <>
+
+      {/* TaskView / Unauthenticated View */}
       <div className='h-screen w-screen flex flex-col'>
         <AppNavbar dispatch={dispatch} user={state.user}/>
 
@@ -118,6 +128,7 @@ const App = () => {
         
       </div>
 
+      {/* Auth Modal */}
       <AuthModal 
         isShow={
           state.isShowLoginModal || state.isShowRegisterModal
@@ -129,6 +140,14 @@ const App = () => {
         handleSubmitAuthModal={handleSubmitAuthModal}
       />
 
+      {/* Task Modal */}
+      <DetailedTaskModal 
+        isShow={!!state.detailedTaskData}
+        task={state.detailedTaskData}
+        handleClose={handleCloseDetailedTaskModal}
+      />
+        
+      {/* Loading screen */}
       {
         state.isLoading && <LoadingScreen />
       }

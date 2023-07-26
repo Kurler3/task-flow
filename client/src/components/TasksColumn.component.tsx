@@ -6,11 +6,13 @@ import { Droppable, Draggable, DroppableProvided } from 'react-beautiful-dnd';
 type IProps = {
     status: IStatus;
     tasks: ITask[];
+    handleSetDetailedTaskData: (task: ITask) => void;
 }
 
 const TasksColumn: React.FC<IProps> = ({
     status,
     tasks,
+    handleSetDetailedTaskData,
 }) => {
    
     return (
@@ -33,6 +35,7 @@ const TasksColumn: React.FC<IProps> = ({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      onClick={() => handleSetDetailedTaskData(task)}
                     >
                       <Task task={task} />
                     </div>

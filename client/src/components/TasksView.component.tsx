@@ -92,8 +92,6 @@ const TasksView: React.FC<IProps> = ({
   // FUNCTIONS ////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
 
-  // Create task
-
   // Update task
   const handleUpdateTask = async (updatedTask: ITask, prevStatus: string, prevIndex: number, newIndex: number) => {
 
@@ -143,8 +141,13 @@ const TasksView: React.FC<IProps> = ({
 
   }
 
-  // Delete task
-
+  // Set detailed task data
+  const handleSetDetailedTaskData = (task: ITask) => {
+    dispatch({
+      type: 'SET_DETAILED_TASK_DATA',
+      payload: task,
+    });
+  }
 
   /////////////////////////////////////////////////////////////////////////////////
   // REACT DND ////////////////////////////////////////////////////////////////////
@@ -183,6 +186,7 @@ const TasksView: React.FC<IProps> = ({
                 key={status.value + index}
                 status={status}
                 tasks={filteredTasks[status.value]}
+                handleSetDetailedTaskData={handleSetDetailedTaskData}
               />
 
 

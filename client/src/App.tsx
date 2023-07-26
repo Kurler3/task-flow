@@ -8,7 +8,6 @@ import LoadingScreen from './components/LoadingScreen.component';
 import { IAuthFormValue, IUser } from './types';
 import { loginApi, registerApi } from './api';
 import TasksView from './components/TasksView.component';
-import DetailedTaskModal from './components/DetailedTaskModal.component';
 
 
 const App = () => {
@@ -118,6 +117,8 @@ const App = () => {
               <TasksView 
                 tasks={state.tasks!}
                 dispatch={dispatch}
+                handleCloseDetailedTaskModal={handleCloseDetailedTaskModal}
+                detailedTaskData={state.detailedTaskData}
               />
             ) :
             (
@@ -138,13 +139,6 @@ const App = () => {
         }
         handleClose={handleCloseAuthModal}
         handleSubmitAuthModal={handleSubmitAuthModal}
-      />
-
-      {/* Task Modal */}
-      <DetailedTaskModal 
-        isShow={!!state.detailedTaskData}
-        task={state.detailedTaskData}
-        handleClose={handleCloseDetailedTaskModal}
       />
         
       {/* Loading screen */}

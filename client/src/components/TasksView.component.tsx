@@ -9,6 +9,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import {
   wait
 } from '../../utils/functions';
+import DetailedTaskModal from "./DetailedTaskModal.component";
 
 export const TASK_STATUS = [
   {
@@ -72,11 +73,15 @@ export const DEFAULT_TASKS: ITask[] = [
 type IProps = {
   tasks: ITask[];
   dispatch: React.Dispatch<Action>;
+  handleCloseDetailedTaskModal: () => void;
+  detailedTaskData: ITask | null;
 }
 
 const TasksView: React.FC<IProps> = ({
   tasks,
   dispatch,
+  handleCloseDetailedTaskModal,
+  detailedTaskData,
 }) => {
 
   const [filteredTasks, setFilteredTasks] = useState(TASK_STATUS.reduce((acc, status) => {
@@ -108,7 +113,7 @@ const TasksView: React.FC<IProps> = ({
       // Update destination status tasks.
       const destinationTasks = filteredTasks[updatedTask.status];
 
-      if(prevStatus === updatedTask.status) {
+      if (prevStatus === updatedTask.status) {
         destinationTasks.splice(prevIndex, 1);
       }
 
@@ -117,10 +122,10 @@ const TasksView: React.FC<IProps> = ({
       // Remove from source.
       const sourceTasks = filteredTasks[prevStatus];
 
-      if(prevStatus !== updatedTask.status) {
+      if (prevStatus !== updatedTask.status) {
         sourceTasks.splice(prevIndex, 1);
       }
-  
+
       setFilteredTasks((prevState) => {
         return {
           ...prevState,
@@ -156,7 +161,7 @@ const TasksView: React.FC<IProps> = ({
   // REACT DND FUNCTIONS
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
-  
+
     if (!destination) return;
 
     if (destination.droppableId === source.droppableId && destination.index === source.index) return;
@@ -176,25 +181,33 @@ const TasksView: React.FC<IProps> = ({
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex justify-center p-14 gap-4 items-start w-full h-full">
-        {
-          TASK_STATUS.map((status, index) => {
-            return (
+    <>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="flex justify-center p-14 gap-4 items-start w-full h-full">
+          {
+            TASK_STATUS.map((status, index) => {
+              return (
 
-              <TasksColumn
-                key={status.value + index}
-                status={status}
-                tasks={filteredTasks[status.value]}
-                handleSetDetailedTaskData={handleSetDetailedTaskData}
-              />
+                <TasksColumn
+                  key={status.value + index}
+                  status={status}
+                  tasks={filteredTasks[status.value]}
+                  handleSetDetailedTaskData={handleSetDetailedTaskData}
+                />
 
 
-            )
-          })
-        }
-      </div>
-    </DragDropContext>
+              )
+            })
+          }
+        </div>
+      </DragDropContext>
+      {/* Task Modal */}
+      <DetailedTaskModal
+        isShow={!!detailedTaskData}
+        task={detailedTaskData}
+        handleClose={handleCloseDetailedTaskModal}
+      />
+    </>
   )
 };
 

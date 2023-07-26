@@ -7,14 +7,17 @@ type IProps = {
     status: IStatus;
     tasks: ITask[];
     handleSetDetailedTaskData: (task: ITask) => void;
+    handleRightClick: (event: React.MouseEvent, task: ITask) => void;
 }
 
 const TasksColumn: React.FC<IProps> = ({
     status,
     tasks,
     handleSetDetailedTaskData,
+    handleRightClick,
 }) => {
-   
+
+    // Render
     return (
         <Droppable droppableId={status.value}>
           {(provided: DroppableProvided) => (
@@ -36,6 +39,7 @@ const TasksColumn: React.FC<IProps> = ({
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       onClick={() => handleSetDetailedTaskData(task)}
+                      onContextMenu={(e) => handleRightClick(e, task)}
                     >
                       <Task task={task} />
                     </div>

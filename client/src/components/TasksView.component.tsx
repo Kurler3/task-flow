@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState } from "react";
-import { ITask } from "../types";
+import { ITask, ITaskFormValue } from "../types";
 import TasksColumn from "./TasksColumn.component";
 import { Action } from "../state/app/app.state";
 
@@ -10,6 +10,7 @@ import {
   wait
 } from '../../utils/functions';
 import DetailedTaskModal from "./DetailedTaskModal.component";
+import ContextMenu from "./ContextMenu.component";
 
 export const TASK_STATUS = [
   {
@@ -82,7 +83,14 @@ const TasksView: React.FC<IProps> = ({
   dispatch,
   handleCloseDetailedTaskModal,
   detailedTaskData,
-}) => {
+}) => { 
+
+  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(
+    null
+  );
+
+  const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+
 
   const [filteredTasks, setFilteredTasks] = useState(TASK_STATUS.reduce((acc, status) => {
 
@@ -154,6 +162,113 @@ const TasksView: React.FC<IProps> = ({
     });
   }
 
+  // Handle update detailed task
+  const handleUpdateDetailedTask = async (taskUpdateData: ITaskFormValue) => {
+
+    // If any updates
+    if(Object.keys(taskUpdateData).length > 0) {
+
+      // Set loading.
+      dispatch({
+        type: 'SET_LOADING',
+        payload: true,
+      });
+      try {
+        //TODO Update on backend
+        await wait(3);
+
+        // Update on filteredTasks state.
+        setFilteredTasks((prevState) => {
+
+          const tasks = prevState[detailedTaskData!.status]
+          const index = tasks.findIndex((task: ITask) => task.id === detailedTaskData!.id);
+
+          tasks[index] = {
+            ...tasks[index],
+            ...taskUpdateData,
+          };
+          
+          return {
+            ...prevState,
+            [detailedTaskData!.status]: tasks,
+          }
+        })
+      } catch (error) {
+        console.error("Error updating task...");
+      } finally {
+        // Set stop loading.
+        dispatch({
+          type: 'SET_LOADING',
+          payload: false,
+        })
+      }
+
+    }
+
+    
+    // Close detailed task modal.
+    dispatch({
+      type: 'SET_DETAILED_TASK_DATA',
+      payload: null,
+    })
+  }
+
+   // Function to handle right-click and show the context menu
+  const handleRightClick = (event: React.MouseEvent, task: ITask) => {
+    event.preventDefault();
+    setContextMenuPosition({ x: event.clientX, y: event.clientY });
+    setSelectedTask(task);
+  };
+
+  // Function to close the context menu
+  const handleCloseContextMenu = () => {
+    setContextMenuPosition(null);
+    setSelectedTask(null);
+  };
+
+  // Function to handle task deletion
+  const handleDeleteTask = async () => {
+
+    // Set loading
+    dispatch({
+      type: 'SET_LOADING',
+      payload: true,
+    });
+
+    try {
+
+      // Delete in backend
+      await wait(3);
+
+      // Update in state
+      setFilteredTasks((prevState) => {
+
+        const tasks = prevState[selectedTask!.status];
+
+        const index = tasks.findIndex((task) => task.id === selectedTask!.id);
+
+        tasks.splice(index, 1);
+
+        return {
+          ...prevState,
+          [selectedTask!.status]: tasks,
+        };
+      });
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+
+      // Set loading false.
+      dispatch({
+        type: 'SET_LOADING',
+        payload: false,
+      });
+
+      handleCloseContextMenu();
+    }
+  };
+
   /////////////////////////////////////////////////////////////////////////////////
   // REACT DND ////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
@@ -187,14 +302,13 @@ const TasksView: React.FC<IProps> = ({
           {
             TASK_STATUS.map((status, index) => {
               return (
-
                 <TasksColumn
                   key={status.value + index}
                   status={status}
                   tasks={filteredTasks[status.value]}
                   handleSetDetailedTaskData={handleSetDetailedTaskData}
+                  handleRightClick={handleRightClick}
                 />
-
 
               )
             })
@@ -206,7 +320,22 @@ const TasksView: React.FC<IProps> = ({
         isShow={!!detailedTaskData}
         task={detailedTaskData}
         handleClose={handleCloseDetailedTaskModal}
+        handleUpdateDetailedTask={handleUpdateDetailedTask}
       />
+      {/* Render the context menu when needed */}
+      {contextMenuPosition && (
+         <div
+          className="fixed inset-0 z-10"
+          onClick={handleCloseContextMenu}
+          onContextMenu={handleCloseContextMenu}
+          >
+         <ContextMenu
+           x={contextMenuPosition.x}
+           y={contextMenuPosition.y}
+           onDelete={handleDeleteTask}
+         />
+       </div>)
+      }
     </>
   )
 };

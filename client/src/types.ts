@@ -32,6 +32,12 @@ export type ITaskFormValue = {
   description?:string;
 }
 
+export type ICreateTaskForm = {
+  title:string;
+  description?:string;
+  status: "todo" | "inProgress" | "done";
+}
+
 export type ILoginResponse = {
   access_token: string; 
   refresh_token: string;

@@ -119,6 +119,7 @@ const App = () => {
                 dispatch={dispatch}
                 handleCloseDetailedTaskModal={handleCloseDetailedTaskModal}
                 detailedTaskData={state.detailedTaskData}
+                isShowCreateTaskModal={state.isShowCreateTaskModal}
               />
             ) :
             (

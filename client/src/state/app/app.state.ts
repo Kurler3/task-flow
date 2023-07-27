@@ -9,6 +9,7 @@ type IState = {
   isShowRegisterModal: boolean;
   isShowLoginModal: boolean;
   detailedTaskData: ITask | null;
+  isShowCreateTaskModal: boolean;
 }
 
 export const defaultAppState: IState = {
@@ -18,6 +19,7 @@ export const defaultAppState: IState = {
   isShowRegisterModal: false,
   isShowLoginModal: false,
   detailedTaskData: null,
+  isShowCreateTaskModal: false,
 };
 
 // Define the action types
@@ -29,12 +31,18 @@ export type Action =
   | { type: 'DELETE_TASK'; payload: number}
   | { type: 'CREATE_TASK'; payload: ITask }
   | { type: 'SET_SHOW_AUTH_MODAL'; payload: { type: 'login' | 'register'; value: boolean } }
-  | { type: 'SET_DETAILED_TASK_DATA', payload: ITask | null };
+  | { type: 'SET_DETAILED_TASK_DATA', payload: ITask | null }
+  | { type: 'SET_SHOW_CREATE_TASK_MODAL', payload: boolean };
 
 // Define the reducer function
 export const appReducer = (state: IState, action: Action): IState => {
   let newTasks;
   switch (action.type) {
+    case 'SET_SHOW_CREATE_TASK_MODAL':
+      return {
+        ...state,
+        isShowCreateTaskModal: action.payload,
+      };
     case 'SET_DETAILED_TASK_DATA':
       return {
         ...state,

@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState } from "react";
-import { ITask, ITaskFormValue } from "../types";
+import { ICreateTaskForm, ITask, ITaskFormValue } from "../types";
 import TasksColumn from "./TasksColumn.component";
 import { Action } from "../state/app/app.state";
 
@@ -11,6 +11,8 @@ import {
 } from '../../utils/functions';
 import DetailedTaskModal from "./DetailedTaskModal.component";
 import ContextMenu from "./ContextMenu.component";
+import CreateTaskModal from "./CreateTaskModal.component";
+import { Button } from "react-bootstrap";
 
 export const TASK_STATUS = [
   {
@@ -76,6 +78,7 @@ type IProps = {
   dispatch: React.Dispatch<Action>;
   handleCloseDetailedTaskModal: () => void;
   detailedTaskData: ITask | null;
+  isShowCreateTaskModal: boolean;
 }
 
 const TasksView: React.FC<IProps> = ({
@@ -83,6 +86,7 @@ const TasksView: React.FC<IProps> = ({
   dispatch,
   handleCloseDetailedTaskModal,
   detailedTaskData,
+  isShowCreateTaskModal,
 }) => { 
 
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(
@@ -269,6 +273,65 @@ const TasksView: React.FC<IProps> = ({
     }
   };
 
+  // Handle open create task modal
+  const handleOpenCloseCreateTaskModal = () => {
+    dispatch({
+      type: 'SET_SHOW_CREATE_TASK_MODAL',
+      payload: !isShowCreateTaskModal,
+    });
+  }
+
+  // Handle create task.
+  const handleCreateTask = async (createTaskValue: ICreateTaskForm) => {
+ 
+    // Set loading
+    dispatch({
+      type: 'SET_LOADING',
+      payload: true,
+    });
+
+    try {
+
+      // Create on backend
+      await wait(3);
+
+      // Update front state
+      setFilteredTasks((prevState) => {
+
+        const tasks = prevState[createTaskValue.status];
+
+        const newTask = {
+          ...createTaskValue,
+
+          // TODO THESE WILL BE RETURNED FROM THE BACKEND
+          id: 1,
+          userId: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+
+        tasks.unshift(newTask);
+
+        return {
+          ...prevState,
+          [newTask.status]: tasks,
+        }
+      })
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+        // Set loading false
+        dispatch({
+          type: 'SET_LOADING',
+          payload: false,
+        });
+
+        handleOpenCloseCreateTaskModal();
+    }
+    
+  }
+
   /////////////////////////////////////////////////////////////////////////////////
   // REACT DND ////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
@@ -294,11 +357,19 @@ const TasksView: React.FC<IProps> = ({
 
     await handleUpdateTask(updatedTask, source.droppableId, source.index, destination.index);
   };
-
+  
   return (
-    <>
+    <div className="flex flex-col justify-center align-center w-100 h-100 relative">
+      {/* Create task button */}
+      <Button 
+        variant="primary"
+        className="m-auto py-2 px-4 mt-4"
+        onClick={handleOpenCloseCreateTaskModal}
+      >Create a task</Button>
+
+
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex justify-center p-14 gap-4 items-start w-full h-full">
+        <div className="flex justify-center p-10 gap-4 items-start w-full h-full">
           {
             TASK_STATUS.map((status, index) => {
               return (
@@ -322,6 +393,12 @@ const TasksView: React.FC<IProps> = ({
         handleClose={handleCloseDetailedTaskModal}
         handleUpdateDetailedTask={handleUpdateDetailedTask}
       />
+      {/* Create Task Modal */}
+      <CreateTaskModal 
+        isShow={isShowCreateTaskModal}
+        handleClose={handleOpenCloseCreateTaskModal}
+        handleCreateTask={handleCreateTask}
+      />
       {/* Render the context menu when needed */}
       {contextMenuPosition && (
          <div
@@ -336,7 +413,7 @@ const TasksView: React.FC<IProps> = ({
          />
        </div>)
       }
-    </>
+    </div>
   )
 };
 

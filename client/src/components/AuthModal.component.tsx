@@ -2,8 +2,6 @@ import { Button, Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { IAuthFormValue, IAuthLoginFormValue, IAuthRegisterFormValue } from "../types";
 
-
-
 type IProps = {
   isShow: boolean;
   isLogin: boolean;
@@ -18,7 +16,7 @@ const alertClassname =
   "text-red-500 border border-red-500 bg-red-100 text-sm p-2 text-center w-100 rounded-md";
 
 const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmitAuthModal }) => {
-
+  
   // Form state.
   const {
     register,
@@ -27,16 +25,6 @@ const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmi
     watch,
   } = useForm<IAuthFormValue>();
 
-  console.log(isLogin)
-
-  const confirmPasswordOptions = {
-    validate: (value: string | undefined) => {
-      if (!isLogin && watch("password") != value) {
-        return "Your passwords do not match";
-      }
-    },
-  };
-  console.log(errors)
   return (
     <Modal show={isShow} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -152,7 +140,11 @@ const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmi
                 <input
                   id="confirmPassword"
                   className={inputClassname}
-                  {...register("confirmPassword", confirmPasswordOptions )}
+                  {...register("confirmPassword", {validate: (value: string | undefined) => {
+                    if (!isLogin && watch("password") !== value) {
+                      return "Your passwords do not match";
+                    }
+                  }} )}
                   type="password"
                   placeholder=" "
                 />

@@ -66,3 +66,11 @@ export type IStatus = {
   taskColor: string;
   columnBgColor: string;
 }
+
+export type IAxiosError = {
+  response: {
+    data: {
+      message: string;
+    }
+  }
+}

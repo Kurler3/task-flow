@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { ICreateTaskForm, ITask, ITaskFormValue } from "../types";
 import TasksColumn from "./TasksColumn.component";
 import { Action } from "../state/app/app.state";
@@ -13,6 +13,7 @@ import DetailedTaskModal from "./DetailedTaskModal.component";
 import ContextMenu from "./ContextMenu.component";
 import CreateTaskModal from "./CreateTaskModal.component";
 import { Button } from "react-bootstrap";
+import { createTask, deleteTask, getTasks, updateTask } from "../api/task.api";
 
 export const TASK_STATUS = [
   {
@@ -74,11 +75,12 @@ export const DEFAULT_TASKS: ITask[] = [
 ]
 
 type IProps = {
-  tasks: ITask[];
+  tasks: ITask[] | undefined | null;
   dispatch: React.Dispatch<Action>;
   handleCloseDetailedTaskModal: () => void;
   detailedTaskData: ITask | null;
   isShowCreateTaskModal: boolean;
+  userId: number;
 }
 
 const TasksView: React.FC<IProps> = ({
@@ -87,6 +89,7 @@ const TasksView: React.FC<IProps> = ({
   handleCloseDetailedTaskModal,
   detailedTaskData,
   isShowCreateTaskModal,
+  userId,
 }) => { 
 
   const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(
@@ -100,10 +103,10 @@ const TasksView: React.FC<IProps> = ({
 
     const statusValue = status.value;
 
-    acc[statusValue] = tasks.filter(task => task.status === statusValue);
+    acc[statusValue] = tasks?.filter(task => task?.status === statusValue);
 
     return acc;
-  }, {} as { [key: string]: ITask[] }));
+  }, {} as { [key: string]: ITask[] | undefined }));
 
   /////////////////////////////////////////////////////////////////////////////////
   // FUNCTIONS ////////////////////////////////////////////////////////////////////
@@ -119,23 +122,22 @@ const TasksView: React.FC<IProps> = ({
 
     try {
 
-      //TODO Update the task in the backend.
-      await wait(3);
+      await updateTask(updatedTask.id, updatedTask);
 
       // Update destination status tasks.
       const destinationTasks = filteredTasks[updatedTask.status];
 
       if (prevStatus === updatedTask.status) {
-        destinationTasks.splice(prevIndex, 1);
+        destinationTasks!.splice(prevIndex, 1);
       }
 
-      destinationTasks.splice(newIndex, 0, updatedTask);
+      destinationTasks!.splice(newIndex, 0, updatedTask);
 
       // Remove from source.
       const sourceTasks = filteredTasks[prevStatus];
 
       if (prevStatus !== updatedTask.status) {
-        sourceTasks.splice(prevIndex, 1);
+        sourceTasks!.splice(prevIndex, 1);
       }
 
       setFilteredTasks((prevState) => {
@@ -178,17 +180,20 @@ const TasksView: React.FC<IProps> = ({
         payload: true,
       });
       try {
-        //TODO Update on backend
-        await wait(3);
+
+        await updateTask(
+          detailedTaskData!.id,
+          taskUpdateData,
+        );
 
         // Update on filteredTasks state.
         setFilteredTasks((prevState) => {
 
           const tasks = prevState[detailedTaskData!.status]
-          const index = tasks.findIndex((task: ITask) => task.id === detailedTaskData!.id);
+          const index = tasks!.findIndex((task: ITask) => task.id === detailedTaskData!.id);
 
-          tasks[index] = {
-            ...tasks[index],
+          tasks![index] = {
+            ...tasks![index],
             ...taskUpdateData,
           };
           
@@ -242,7 +247,7 @@ const TasksView: React.FC<IProps> = ({
     try {
 
       // Delete in backend
-      await wait(3);
+      await deleteTask(selectedTask!.id);
 
       // Update in state
       setFilteredTasks((prevState) => {
@@ -293,30 +298,28 @@ const TasksView: React.FC<IProps> = ({
     try {
 
       // Create on backend
-      await wait(3);
+      const newTask = await createTask(
+        userId,
+        createTaskValue,
+      );
 
-      // Update front state
-      setFilteredTasks((prevState) => {
+        if(newTask) {
+          // Update front state
+          setFilteredTasks((prevState) => {
 
-        const tasks = prevState[createTaskValue.status];
+            const tasks = prevState[createTaskValue.status];
 
-        const newTask = {
-          ...createTaskValue,
+            tasks!.unshift(newTask!);
 
-          // TODO THESE WILL BE RETURNED FROM THE BACKEND
-          id: 1,
-          userId: 1,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+            return {
+              ...prevState,
+              [newTask!.status]: tasks,
+            };
+          })
+        } else {
+          alert("Something went wrong. Try again")
         }
-
-        tasks.unshift(newTask);
-
-        return {
-          ...prevState,
-          [newTask.status]: tasks,
-        }
-      })
+      
 
     } catch (error) {
       console.error(error);
@@ -357,8 +360,63 @@ const TasksView: React.FC<IProps> = ({
 
     await handleUpdateTask(updatedTask, source.droppableId, source.index, destination.index);
   };
+
+
+  //////////////////////////////////////////////////////////////////////////////////
+  // FETCH TASKS ///////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////
+
+  const handleFetchTasks = useCallback(async () => {
+
+    dispatch({
+      type: 'SET_LOADING',
+      payload: true,
+    })
+
+    try {
+
+      // Get tasks
+      const tasks = await getTasks();
+
+      // Update filtered state
+      setFilteredTasks(TASK_STATUS.reduce((acc, status) => {
+
+        const statusValue = status.value;
+    
+        acc[statusValue] = tasks?.filter(task => task?.status === statusValue);
+    
+        return acc;
+      }, {} as { [key: string]: ITask[] }))
+
+      dispatch({
+        type: 'SET_TASKS',
+        payload: tasks,
+      });
+
+
+    } catch(error) {
+      alert(error);
+      alert("Reload the page please.")
+    } finally { 
+      dispatch({
+        type: 'SET_LOADING',
+        payload: false,
+      })
   
+    }
+
+  }, [dispatch]);
+
+  useEffect(() => {
+    if(!tasks) {
+      handleFetchTasks()
+    }
+  }, [handleFetchTasks, tasks]);
+
   return (
+
+    tasks && (
+
     <div className="flex flex-col justify-center align-center w-100 h-100 relative">
       {/* Create task button */}
       <Button 
@@ -376,7 +434,7 @@ const TasksView: React.FC<IProps> = ({
                 <TasksColumn
                   key={status.value + index}
                   status={status}
-                  tasks={filteredTasks[status.value]}
+                  tasks={filteredTasks[status.value]!}
                   handleSetDetailedTaskData={handleSetDetailedTaskData}
                   handleRightClick={handleRightClick}
                 />
@@ -414,6 +472,8 @@ const TasksView: React.FC<IProps> = ({
        </div>)
       }
     </div>
+
+    )
   )
 };
 

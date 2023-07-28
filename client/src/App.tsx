@@ -8,7 +8,7 @@ import LoadingScreen from './components/LoadingScreen.component';
 import { AuthFormValues, IUser } from './types';
 import { loginApi, registerApi } from './api';
 import TasksView from './components/TasksView.component';
-import {  isTokenValid } from '../utils/functions';
+import { isTokenValid } from '../utils/functions';
 import { getUserWithJwt } from './api/user.api';
 
 
@@ -39,7 +39,6 @@ const App = () => {
 
   // Handle Login 
   const handleSubmitAuthModal = async (authValue: AuthFormValues<typeof state.isShowLoginModal>) => {
-    console.log(authValue);
 
     let user: IUser | undefined;
 
@@ -58,17 +57,24 @@ const App = () => {
       ) {
         // If register => get user directly
         const tokens = await loginApi(authValue);
-      
-        // Call the /user/me route to get the user with this access_token.
-        user = await getUserWithJwt(tokens.access_token);
+        if (tokens) {
+          // Call the /user/me route to get the user with this access_token.
+          user = await getUserWithJwt(tokens.access_token);
 
-        localStorage.setItem("jwtToken", tokens.access_token);
+          localStorage.setItem("jwtToken", tokens.access_token);
+        }
+
 
       } else {
 
         // Create user and get it back
         user = await registerApi(authValue);
 
+        // If register => get user directly
+        const tokens = await loginApi(authValue);
+        if (tokens) {
+          localStorage.setItem("jwtToken", tokens.access_token);
+        }
       }
 
       if (user) {
@@ -162,11 +168,12 @@ const App = () => {
             state.user ?
               (
                 <TasksView
-                  tasks={state.tasks!}
+                  tasks={state.tasks}
                   dispatch={dispatch}
                   handleCloseDetailedTaskModal={handleCloseDetailedTaskModal}
                   detailedTaskData={state.detailedTaskData}
                   isShowCreateTaskModal={state.isShowCreateTaskModal}
+                  userId={state.user.id}
                 />
               ) :
               (
@@ -178,16 +185,21 @@ const App = () => {
       </div>
 
       {/* Auth Modal */}
-      <AuthModal
-        isShow={
-          state.isShowLoginModal || state.isShowRegisterModal
-        }
-        isLogin={
-          state.isShowLoginModal
-        }
-        handleClose={handleCloseAuthModal}
-        handleSubmitAuthModal={handleSubmitAuthModal}
-      />
+      {
+        (state.isShowLoginModal || state.isShowRegisterModal) && (
+          <AuthModal
+            isShow={
+              state.isShowLoginModal || state.isShowRegisterModal
+            }
+            isLogin={
+              state.isShowLoginModal
+            }
+            handleClose={handleCloseAuthModal}
+            handleSubmitAuthModal={handleSubmitAuthModal}
+          />
+        )
+      }
+
 
       {/* Loading screen */}
       {

@@ -1,11 +1,10 @@
 /* eslint-disable no-case-declarations */
-import { DEFAULT_TASKS } from "../../components/TasksView.component";
 import { ITask, IUser } from "../../types";
 
 type IState = {
   isLoading: boolean;
   user: IUser | null;
-  tasks: ITask[] | null;
+  tasks: ITask[] | null | undefined;
   isShowRegisterModal: boolean;
   isShowLoginModal: boolean;
   detailedTaskData: ITask | null;
@@ -15,7 +14,7 @@ type IState = {
 export const defaultAppState: IState = {
   isLoading: false,
   user: null,
-  tasks: DEFAULT_TASKS,
+  tasks: null,
   isShowRegisterModal: false,
   isShowLoginModal: false,
   detailedTaskData: null,
@@ -26,7 +25,7 @@ export const defaultAppState: IState = {
 export type Action =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_USER'; payload: IUser | null }
-  | { type: 'SET_TASKS'; payload: ITask[] | null }
+  | { type: 'SET_TASKS'; payload: ITask[] | undefined | null }
   | { type: 'UPDATE_TASK'; payload: ITask}
   | { type: 'DELETE_TASK'; payload: number}
   | { type: 'CREATE_TASK'; payload: ITask }

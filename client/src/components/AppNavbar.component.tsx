@@ -19,7 +19,7 @@ const AppNavbar: React.FC<IProps> = ({
         type: type,
         value: true,
       }
-    })
+    });
   }
 
   const handleLogout = () => {

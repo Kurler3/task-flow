@@ -9,6 +9,13 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  await app.listen(3000);
+
+  app.enableCors({
+    origin: 'http://127.0.0.1:5173', // Replace with your frontend's URL
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+  await app.listen(4000);
 }
 bootstrap();

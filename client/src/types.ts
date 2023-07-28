@@ -19,6 +19,19 @@ export type ITask = {
   updatedAt: string;
 }
 
+export type IAuthLoginFormValue = {
+  email: string;
+  password: string;
+}
+
+export type IAuthRegisterFormValue = {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  password: string;
+  confirmPassword?: string;
+}
+
 export type IAuthFormValue = {
   email: string;
   firstName?: string;
@@ -26,6 +39,8 @@ export type IAuthFormValue = {
   password: string;
   confirmPassword?: string;
 }
+
+export type AuthFormValues<T extends boolean> = T extends true ? IAuthLoginFormValue : IAuthRegisterFormValue;
 
 export type ITaskFormValue = {
   title?:string;

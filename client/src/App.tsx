@@ -1,13 +1,15 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import './App.css'
 import AppNavbar from './components/AppNavbar.component'
 import UnauthenticatedView from './components/UnauthenticatedView.component';
 import { appReducer, defaultAppState } from './state/app/app.state';
 import AuthModal from './components/AuthModal.component';
 import LoadingScreen from './components/LoadingScreen.component';
-import { IAuthFormValue, IUser } from './types';
+import { AuthFormValues, IUser } from './types';
 import { loginApi, registerApi } from './api';
 import TasksView from './components/TasksView.component';
+import {  isTokenValid } from '../utils/functions';
+import { getUserWithJwt } from './api/user.api';
 
 
 const App = () => {
@@ -17,7 +19,7 @@ const App = () => {
 
   // Handle close auth modal.
   const handleCloseAuthModal = () => {
-  
+
     dispatch({
       type: 'SET_SHOW_AUTH_MODAL',
       payload: {
@@ -36,7 +38,7 @@ const App = () => {
   }
 
   // Handle Login 
-  const handleSubmitAuthModal = async (authValue: IAuthFormValue) => {
+  const handleSubmitAuthModal = async (authValue: AuthFormValues<typeof state.isShowLoginModal>) => {
     console.log(authValue);
 
     let user: IUser | undefined;
@@ -51,17 +53,17 @@ const App = () => {
     try {
 
       // If login => get tokens and then user
-      if(
+      if (
         state.isShowLoginModal
       ) {
         // If register => get user directly
-
         const tokens = await loginApi(authValue);
-
-        // Set the access_token in the cookies/local storage.
-        console.log(tokens);
-
+      
         // Call the /user/me route to get the user with this access_token.
+        user = await getUserWithJwt(tokens.access_token);
+
+        localStorage.setItem("jwtToken", tokens.access_token);
+
       } else {
 
         // Create user and get it back
@@ -69,23 +71,27 @@ const App = () => {
 
       }
 
-      // Set user in the app state.
-      dispatch({
-        type: 'SET_USER',
-        payload: user!,
-      });
+      if (user) {
 
-      // Hide the auth moda.
-      dispatch({
-        type: 'SET_SHOW_AUTH_MODAL',
-        payload: {
-          type: state.isShowLoginModal ? 'login' : 'register',
-          value: false,
-        }
-      });
+        // Set user in the app state.
+        dispatch({
+          type: 'SET_USER',
+          payload: user!,
+        });
+
+        // Hide the auth moda.
+        dispatch({
+          type: 'SET_SHOW_AUTH_MODAL',
+          payload: {
+            type: state.isShowLoginModal ? 'login' : 'register',
+            value: false,
+          }
+        });
+      }
+
 
     } catch (error) {
-      
+
       // Show error if any
       console.error(error);
 
@@ -100,38 +106,79 @@ const App = () => {
 
   }
 
-  //TODO Check if has jwt (send request to server to get current user if has)
-  
+  // Handle check jwt
+  const handleCheckJwt = async () => {
+    // Check for the token in local storage
+    const storedToken = localStorage.getItem('jwtToken');
+    if (storedToken) {
+      dispatch({
+        type: 'SET_LOADING',
+        payload: true,
+      });
+
+      try {
+        // Check if the stored token is valid
+        const user = await isTokenValid(storedToken);
+
+        if (user) {
+
+          dispatch({
+            type: 'SET_USER',
+            payload: user,
+          });
+
+        } else {
+          // If the token is invalid, remove it from local storage
+          localStorage.removeItem('jwtToken');
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      } finally {
+        dispatch({
+          type: 'SET_LOADING',
+          payload: false,
+        });
+      }
+    }
+  }
+
+  // Check if has jwt (send request to server to get current user if has)
+  useEffect(() => {
+    handleCheckJwt();
+  }, [])
 
   return (
     <>
 
       {/* TaskView / Unauthenticated View */}
       <div className='h-screen w-screen flex flex-col'>
-        <AppNavbar dispatch={dispatch} user={state.user}/>
+        <AppNavbar dispatch={dispatch} user={state.user} />
 
         <div className="bg-indigo w-100 h-100 flex justify-center items-center flex-1">
           {
-            !state.user ?
-            (
-              <TasksView 
-                tasks={state.tasks!}
-                dispatch={dispatch}
-                handleCloseDetailedTaskModal={handleCloseDetailedTaskModal}
-                detailedTaskData={state.detailedTaskData}
-                isShowCreateTaskModal={state.isShowCreateTaskModal}
-              />
-            ) :
-            (
-              <UnauthenticatedView />
-            )
+            state.user ?
+              (
+                <TasksView
+                  tasks={state.tasks!}
+                  dispatch={dispatch}
+                  handleCloseDetailedTaskModal={handleCloseDetailedTaskModal}
+                  detailedTaskData={state.detailedTaskData}
+                  isShowCreateTaskModal={state.isShowCreateTaskModal}
+                />
+              ) :
+              (
+                <UnauthenticatedView />
+              )
           }
         </div>
-        
+
       </div>
 
       {/* Auth Modal */}
-      <AuthModal 
+      <AuthModal
         isShow={
           state.isShowLoginModal || state.isShowRegisterModal
         }
@@ -141,7 +188,7 @@ const App = () => {
         handleClose={handleCloseAuthModal}
         handleSubmitAuthModal={handleSubmitAuthModal}
       />
-        
+
       {/* Loading screen */}
       {
         state.isLoading && <LoadingScreen />

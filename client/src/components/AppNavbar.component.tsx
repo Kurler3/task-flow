@@ -22,6 +22,14 @@ const AppNavbar: React.FC<IProps> = ({
     })
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('jwtToken');
+    dispatch({
+      type: "SET_USER",
+      payload: null,
+    })
+  }
+
   return (
     <div className="navbar bg-base-300">
       <div className="navbar-start">
@@ -34,7 +42,7 @@ const AppNavbar: React.FC<IProps> = ({
         {
           user ?
           (
-            <a className="btn bg-picton-blue text-white hover:bg-marian-blue">Logout</a>
+            <a className="btn bg-picton-blue text-white hover:bg-marian-blue" onClick={handleLogout}>Logout</a>
           ) :
           (
             <>

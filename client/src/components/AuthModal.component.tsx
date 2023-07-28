@@ -1,12 +1,14 @@
 import { Button, Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { IAuthFormValue } from "../types";
+import { IAuthFormValue, IAuthLoginFormValue, IAuthRegisterFormValue } from "../types";
+
+
 
 type IProps = {
   isShow: boolean;
   isLogin: boolean;
   handleClose: () => void;
-  handleSubmitAuthModal: (authValue: IAuthFormValue) => Promise<void>;
+  handleSubmitAuthModal: (authValue: IAuthLoginFormValue|IAuthRegisterFormValue) => Promise<void>;
 };
 
 const inputClassname =
@@ -16,6 +18,7 @@ const alertClassname =
   "text-red-500 border border-red-500 bg-red-100 text-sm p-2 text-center w-100 rounded-md";
 
 const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmitAuthModal }) => {
+
   // Form state.
   const {
     register,
@@ -24,6 +27,16 @@ const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmi
     watch,
   } = useForm<IAuthFormValue>();
 
+  console.log(isLogin)
+
+  const confirmPasswordOptions = {
+    validate: (value: string | undefined) => {
+      if (!isLogin && watch("password") != value) {
+        return "Your passwords do not match";
+      }
+    },
+  };
+  console.log(errors)
   return (
     <Modal show={isShow} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -139,18 +152,7 @@ const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmi
                 <input
                   id="confirmPassword"
                   className={inputClassname}
-                  {...register("confirmPassword", {
-                    required: "required",
-                    minLength: {
-                      value: 6,
-                      message: "min length is 6",
-                    },
-                    validate: (value: string | undefined) => {
-                      if (watch("password") != value) {
-                        return "Your passwords do not match";
-                      }
-                    },
-                  })}
+                  {...register("confirmPassword", confirmPasswordOptions )}
                   type="password"
                   placeholder=" "
                 />
@@ -163,7 +165,7 @@ const AuthModal: React.FC<IProps> = ({ isShow, isLogin, handleClose, handleSubmi
                 </label>
               </div>
 
-              {errors.confirmPassword && (
+              {"confirmPassword" in errors && errors.confirmPassword && (
                 <div className={alertClassname}>
                   {errors.confirmPassword.message}
                 </div>

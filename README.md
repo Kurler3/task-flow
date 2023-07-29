@@ -3,7 +3,7 @@
 ### creating the backend using NestJS, and developing the frontend with React. 
 ### This document provides instructions on how to set up and run the project.
 
-
+![Home](prints/print1.png)
 
 ## Introduction
 
